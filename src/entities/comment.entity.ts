@@ -23,7 +23,7 @@ export class Comment {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     })
-    @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
+    @JoinColumn([{ name: 'postId', referencedColumnName: 'id' }])
     Post: Post;
 
     @ManyToOne(() => User, User => User.Comment, {
