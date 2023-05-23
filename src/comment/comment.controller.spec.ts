@@ -1,20 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommentController } from './comment.controller';
+import { ICommentRepository } from './comment.interface';
 import { CommentService } from './comment.service';
+import { FakeCommentRepository } from './comment.service.spec';
 
 describe('CommentController', () => {
-  let controller: CommentController;
+    let commentController: CommentController;
+    let commentService: CommentService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [CommentController],
-      providers: [CommentService],
-    }).compile();
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [CommentController],
+            providers: [CommentService, { provide: ICommentRepository, useClass: FakeCommentRepository }],
+        }).compile();
 
-    controller = module.get<CommentController>(CommentController);
-  });
+        commentService = module.get<CommentService>(CommentService);
+        commentController = module.get<CommentController>(CommentController);
+    });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+    it('should be defined', () => {
+        expect(commentController).toBeDefined();
+    });
+
+    describe('createComment', () => {
+        it('존재하는지 확인', async () => {
+            expect(commentController.createComment).toBeDefined();
+        });
+
+        it('서비스의 createComment를 호출하는지 확인', async () => {
+            const body = { userId: 1, postId: 1, content: '댓글 입니다' };
+            jest.spyOn(commentService, 'createComment').mockResolvedValue(null);
+            await commentController.createComment(body);
+            expect(commentService.createComment).toHaveBeenCalledWith(body);
+        });
+    });
 });
