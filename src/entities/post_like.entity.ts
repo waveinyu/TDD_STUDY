@@ -8,10 +8,10 @@ export class PostLike {
     id: number;
 
     @Column('int', { name: 'postId' })
-    postId: string;
+    postId: number;
 
     @Column('int', { name: 'userId' })
-    userId: string;
+    userId: number;
 
     @ManyToOne(() => User, User => User.PostLike, {
         onDelete: 'CASCADE',
