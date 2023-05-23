@@ -8,10 +8,10 @@ export class Comment {
     id: number;
 
     @Column('int', { name: 'postId' })
-    postId: string;
+    postId: number;
 
     @Column('int', { name: 'userId' })
-    userId: string;
+    userId: number;
 
     @Column('varchar', { name: 'content' })
     content: string;
