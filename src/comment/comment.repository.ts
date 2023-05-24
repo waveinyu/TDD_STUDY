@@ -4,6 +4,8 @@ import { Comment } from '../entities/comment.entity';
 import { Repository } from 'typeorm';
 import { ICommentRepository } from './comment.interface';
 import { Post } from '../entities/post.entity';
+import { PostOutputDto } from './dto/output/post.dto';
+import { CommentOutputDto } from './dto/output/comment.dto';
 
 @Injectable()
 export class CommentRepository implements ICommentRepository {
@@ -21,7 +23,11 @@ export class CommentRepository implements ICommentRepository {
         return;
     }
 
-    async findOnePost(postId: number) {
+    async findOnePost(postId: number): Promise<PostOutputDto> {
         return await this.postModel.findOne({ where: { id: postId } });
+    }
+
+    async getCommentsByPostId(postId: number): Promise<CommentOutputDto[]> {
+        return await this.commentModel.find({ where: { postId } });
     }
 }
