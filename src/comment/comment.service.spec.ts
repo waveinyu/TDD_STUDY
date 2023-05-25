@@ -5,7 +5,7 @@ import { CommentService } from './comment.service';
 import { CommentOutputDto } from './dto/output/comment.dto';
 import { PostOutputDto } from './dto/output/post.dto';
 
-const mockData = {
+export const mockData = {
     post: {
         id: 1,
         userId: 1,
@@ -15,7 +15,7 @@ const mockData = {
         createdAt: new Date('2022-05-20'),
     },
 
-    comment: [
+    comments: [
         {
             id: 1,
             userId: 1,
@@ -43,7 +43,11 @@ export class FakeCommentRepository implements ICommentRepository {
     }
 
     async getCommentsByPostId(postId: number): Promise<CommentOutputDto[]> {
-        return mockData.comment;
+        return mockData.comments;
+    }
+
+    async updateComment(commentId: number, content: string): Promise<void> {
+        return;
     }
 }
 
@@ -64,23 +68,26 @@ describe('CommentService', () => {
     });
 
     describe('createComment', () => {
+        let body;
+
+        beforeEach(() => {
+            body = { userId: 1, postId: 1, content: '댓글 입니다' };
+        });
         it('commentRepository의 함수들을 올바르게 호출하는지 확인', async () => {
-            const body = { userId: 1, postId: 1, content: '댓글 입니다' };
             jest.spyOn(commentRepository, 'createComment').mockResolvedValue(null);
             jest.spyOn(commentRepository, 'findOnePost').mockResolvedValue(mockData.post);
             await commentService.createComment(body);
+
             expect(commentRepository.createComment).toHaveBeenCalledWith(body.userId, body.postId, body.content);
             expect(commentRepository.findOnePost).toHaveBeenCalledWith(body.postId);
         });
 
         it('null을 리턴하는지 확인', async () => {
-            const body = { userId: 1, postId: 1, content: '댓글 입니다' };
             const result = await commentService.createComment(body);
             expect(result).toEqual(undefined);
         });
 
         it('post가 존재하지 않는 경우', async () => {
-            const body = { userId: 1, postId: 1, content: '댓글 입니다' };
             jest.spyOn(commentRepository, 'findOnePost').mockResolvedValue(null);
             await expect(commentService.createComment(body)).rejects.toThrowError(
                 new BadRequestException('존재하지 않는 게시글 입니다'),
@@ -89,26 +96,61 @@ describe('CommentService', () => {
     });
 
     describe('getComments', () => {
+        let postId;
+
+        beforeEach(() => {
+            postId = 1;
+        });
+
         it('내부의 함수들을 올바르게 호출하는지 확인', async () => {
-            const body = { postId: 1 };
-            jest.spyOn(commentRepository, 'getCommentsByPostId').mockResolvedValue(mockData.comment);
             jest.spyOn(commentRepository, 'findOnePost').mockResolvedValue(mockData.post);
-            await commentService.getComments(body);
-            expect(commentRepository.getCommentsByPostId).toHaveBeenCalledWith(body.postId);
+            jest.spyOn(commentRepository, 'getCommentsByPostId').mockResolvedValue(mockData.comments);
+            await commentService.getComments(postId);
+
+            expect(commentRepository.findOnePost).toHaveBeenCalledWith(postId);
+            expect(commentRepository.getCommentsByPostId).toHaveBeenCalledWith(postId);
         });
 
         it('댓글 배열을 리턴하는지 확인', async () => {
-            const body = { postId: 1 };
-            const result = await commentService.getComments(body);
-            expect(result).toEqual(mockData.comment);
+            const result = await commentService.getComments(postId);
+            expect(result).toEqual(mockData.comments);
         });
 
         it('post가 존재하지 않는 경우', async () => {
-            const body = { postId: 2 };
             jest.spyOn(commentRepository, 'findOnePost').mockResolvedValue(null);
-            await expect(commentService.getComments(body)).rejects.toThrowError(
+            await expect(commentService.getComments(postId)).rejects.toThrowError(
                 new BadRequestException('존재하지 않는 게시글 입니다'),
             );
+        });
+    });
+
+    describe('updateComment', () => {
+        let postId, commentId, body;
+
+        beforeEach(() => {
+            postId = 1;
+            commentId = 1;
+            body = { content: '수정된 댓글' };
+        });
+        it('내부의 함수들을 올바르게 호출하는지 확인', async () => {
+            jest.spyOn(commentRepository, 'findOnePost').mockResolvedValue(mockData.post);
+            jest.spyOn(commentRepository, 'updateComment').mockResolvedValue(null);
+            await commentService.updateComment(postId, commentId, body);
+
+            expect(commentRepository.findOnePost).toHaveBeenCalledWith(postId);
+            expect(commentRepository.updateComment).toHaveBeenCalledWith(commentId, body.content);
+        });
+
+        it('post가 존재하지 않는 경우', async () => {
+            jest.spyOn(commentRepository, 'findOnePost').mockResolvedValue(null);
+            await expect(commentService.updateComment(postId, commentId, body)).rejects.toThrowError(
+                new BadRequestException('존재하지 않는 게시글 입니다'),
+            );
+        });
+
+        it('결과값이 undefined인지 확인', async () => {
+            const result = await commentService.updateComment(postId, commentId, body);
+            expect(result).toEqual(undefined);
         });
     });
 });

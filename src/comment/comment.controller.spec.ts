@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommentController } from './comment.controller';
 import { ICommentRepository } from './comment.interface';
 import { CommentService } from './comment.service';
-import { FakeCommentRepository } from './comment.service.spec';
+import { FakeCommentRepository, mockData } from './comment.service.spec';
 
 describe('CommentController', () => {
     let commentController: CommentController;
@@ -32,6 +32,26 @@ describe('CommentController', () => {
             jest.spyOn(commentService, 'createComment').mockResolvedValue(null);
             await commentController.createComment(body);
             expect(commentService.createComment).toHaveBeenCalledWith(body);
+        });
+    });
+
+    describe('getComments', () => {
+        it('서비스의 getComments를 호출하는지 확인', async () => {
+            const postId = 1;
+            jest.spyOn(commentService, 'getComments').mockResolvedValue(mockData.comments);
+            await commentController.getComments(postId);
+            expect(commentService.getComments).toHaveBeenCalledWith(postId);
+        });
+    });
+
+    describe('/:postId/:commentId', () => {
+        it('서비스의 updateComment를 호출하는지 확인', async () => {
+            const postId = 1;
+            const commentId = 1;
+            const body = { content: '수정된 댓글' };
+            jest.spyOn(commentService, 'updateComment').mockResolvedValue(null);
+            await commentController.updateComment(postId, commentId, body);
+            expect(commentService.updateComment).toHaveBeenCalledWith(postId, commentId, body);
         });
     });
 });

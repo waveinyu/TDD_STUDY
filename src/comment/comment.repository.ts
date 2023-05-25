@@ -30,4 +30,9 @@ export class CommentRepository implements ICommentRepository {
     async getCommentsByPostId(postId: number): Promise<CommentOutputDto[]> {
         return await this.commentModel.find({ where: { postId } });
     }
+
+    async updateComment(commentId: number, content: string): Promise<void> {
+        await this.commentModel.update(commentId, { content });
+        return;
+    }
 }
