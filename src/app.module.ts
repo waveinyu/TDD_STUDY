@@ -11,22 +11,20 @@ import { Comment } from './entities/comment.entity';
 import { PostLike } from './entities/post_like.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RavenInterceptor, RavenModule } from 'nest-raven';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 @Module({
     imports: [
-        ConfigModule.forRoot({ isGlobal: true }),
+        ConfigModule.forRoot({ isGlobal: true }), // ConfigService를 사용하기 위해서 import
         UserModule,
         CommentModule,
         PostModule,
         LikeModule,
-        RavenModule,
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
             useFactory: async (configService: ConfigService) => {
                 return {
                     type: 'mysql',
-                    host: 'localhost',
+                    host: configService.get('DB_HOST'),
                     port: 3306,
                     username: configService.get('DB_USERNAME'),
                     password: configService.get('DB_PASSWORD'),
@@ -40,6 +38,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
         }),
     ],
     controllers: [AppController],
-    providers: [AppService, { provide: APP_INTERCEPTOR, useValue: new RavenInterceptor() }],
+    providers: [AppService],
 })
 export class AppModule {}

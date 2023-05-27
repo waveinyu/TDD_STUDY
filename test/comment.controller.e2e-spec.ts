@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { CommentModule } from '../src/comment/comment.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createConnection, getConnection } from 'typeorm';
 import { Comment } from '../src/entities/comment.entity';
 import { Post } from '../src/entities/post.entity';
@@ -15,13 +15,14 @@ describe('AppController (e2e)', () => {
     beforeEach(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
+                ConfigModule.forRoot({ isGlobal: true }), // ConfigService를 사용하기 위해서 import
                 CommentModule,
                 TypeOrmModule.forRootAsync({
                     inject: [ConfigService],
                     useFactory: async (configService: ConfigService) => {
                         return {
                             type: 'mysql',
-                            host: 'localhost',
+                            host: configService.get('DB_HOST'),
                             port: 3306,
                             username: configService.get('DB_USERNAME'),
                             password: configService.get('DB_PASSWORD'),
