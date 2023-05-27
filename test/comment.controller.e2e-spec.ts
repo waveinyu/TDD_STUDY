@@ -18,7 +18,6 @@ describe('AppController (e2e)', () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
                 ConfigModule.forRoot({ isGlobal: true }), // ConfigService를 사용하기 위해서 import
-                CommentModule,
                 TypeOrmModule.forRootAsync({
                     inject: [ConfigService],
                     useFactory: async (configService: ConfigService) => {
@@ -30,12 +29,13 @@ describe('AppController (e2e)', () => {
                             password: configService.get('DB_PASSWORD'),
                             database: configService.get('DB_DATABASE'),
                             entities: [User, Post, Comment, PostLike],
-                            synchronize: false,
+                            synchronize: true,
                             charset: 'utf8mb4',
                             logging: false,
                         };
                     },
                 }),
+                CommentModule,
             ],
         }).compile();
 
@@ -43,7 +43,10 @@ describe('AppController (e2e)', () => {
         await app.init();
     });
 
-    it('/comment (GET)', () => {
-        return request(app.getHttpServer()).get('/comment').send({ userId: 1, postId: 1, content: '댓글' }).expect(200);
+    it('/comment (POST)', () => {
+        return request(app.getHttpServer())
+            .post('/comment')
+            .send({ userId: 1, postId: 1, content: '댓글' })
+            .expect(200);
     });
 });

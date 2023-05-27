@@ -30,7 +30,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
                     password: configService.get('DB_PASSWORD'),
                     database: configService.get('DB_DATABASE'),
                     entities: [User, Post, Comment, PostLike],
-                    synchronize: false,
+                    synchronize: true,
                     charset: 'utf8mb4',
                     logging: false,
                 };
