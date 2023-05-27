@@ -8,7 +8,7 @@ export class CommentController {
     constructor(private readonly commentService: CommentService) {}
 
     @Post()
-    async createComment(body: CreateCommentInputDto): Promise<void> {
+    async createComment(@Body() body: CreateCommentInputDto): Promise<void> {
         await this.commentService.createComment(body);
         return;
     }
@@ -19,7 +19,7 @@ export class CommentController {
     }
 
     @Put('/:postId/:commentId')
-    async updateComment(@Param('postId') postId: number, @Param('commentId') commentId: number, body) {
+    async updateComment(@Param('postId') postId: number, @Param('commentId') commentId: number, @Body() body) {
         await this.commentService.updateComment(postId, commentId, body);
         return;
     }

@@ -11,7 +11,8 @@ import { Comment } from './entities/comment.entity';
 import { PostLike } from './entities/post_like.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
+import { RavenInterceptor, RavenModule } from 'nest-raven';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 @Module({
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
@@ -19,6 +20,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         CommentModule,
         PostModule,
         LikeModule,
+        RavenModule,
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
             useFactory: async (configService: ConfigService) => {
@@ -30,7 +32,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                     password: configService.get('DB_PASSWORD'),
                     database: configService.get('DB_DATABASE'),
                     entities: [User, Post, Comment, PostLike],
-                    synchronize: true,
+                    synchronize: false,
                     charset: 'utf8mb4',
                     logging: false,
                 };
@@ -38,6 +40,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         }),
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService, { provide: APP_INTERCEPTOR, useValue: new RavenInterceptor() }],
 })
 export class AppModule {}

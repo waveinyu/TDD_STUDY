@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CommentController } from './comment.controller';
-import { ICommentRepository } from './comment.interface';
-import { CommentService } from './comment.service';
+import { CommentController } from '../comment.controller';
+import { ICommentRepository } from '../comment.interface';
+import { CommentService } from '../comment.service';
 import { FakeCommentRepository, mockData } from './comment.service.spec';
 
 describe('CommentController', () => {

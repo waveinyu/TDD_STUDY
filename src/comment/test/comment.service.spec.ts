@@ -1,9 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICommentRepository } from './comment.interface';
-import { CommentService } from './comment.service';
-import { CommentOutputDto } from './dto/output/comment.dto';
-import { PostOutputDto } from './dto/output/post.dto';
+import { ICommentRepository } from '../comment.interface';
+import { CommentService } from '../comment.service';
+import { CommentOutputDto } from '../dto/output/comment.dto';
+import { PostOutputDto } from '../dto/output/post.dto';
 
 export const mockData = {
     post: {
