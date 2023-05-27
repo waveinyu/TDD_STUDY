@@ -6,8 +6,10 @@ import { CommentModule } from '../src/comment/comment.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createConnection, getConnection } from 'typeorm';
+import { User } from '../src/entities/user.entity';
 import { Comment } from '../src/entities/comment.entity';
 import { Post } from '../src/entities/post.entity';
+import { PostLike } from '../src/entities/post_like.entity';
 
 describe('AppController (e2e)', () => {
     let app: INestApplication;
@@ -27,7 +29,7 @@ describe('AppController (e2e)', () => {
                             username: configService.get('DB_USERNAME'),
                             password: configService.get('DB_PASSWORD'),
                             database: configService.get('DB_DATABASE'),
-                            entities: [Post, Comment],
+                            entities: [User, Post, Comment, PostLike],
                             synchronize: false,
                             charset: 'utf8mb4',
                             logging: false,
